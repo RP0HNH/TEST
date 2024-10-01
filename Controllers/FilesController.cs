@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using WebApplication1.Models;
+using System.IO;
 
 [Route("api/[controller]")]
 [ApiController]
@@ -63,13 +64,37 @@ public class FilesController : ControllerBase
         return cloudFile;
     }
 
-    [HttpPut("{id}")]
-    public async Task<IActionResult> UpdateFile(int id, [FromBody] string newName)
+    [HttpGet("download/{id}")]
+    public async Task<IActionResult> DownloadFile(int id)
     {
         var cloudFile = await _context.Files.FindAsync(id);
         if (cloudFile == null)
         {
-            return NotFound();
+            return NotFound("Файл не найден.");
+        }
+
+        var filePath = Path.Combine("files", cloudFile.Name);
+        if (!System.IO.File.Exists(filePath))
+        {
+            return NotFound("Физический файл не найден.");
+        }
+
+        var fileBytes = await System.IO.File.ReadAllBytesAsync(filePath);
+        return File(fileBytes, System.Net.Mime.MediaTypeNames.Application.Octet, cloudFile.Name);
+    }
+
+    [HttpPut("{id}")]
+    public async Task<IActionResult> UpdateFile(int id, [FromBody] string newName)
+    {
+        if (string.IsNullOrWhiteSpace(newName))
+        {
+            return BadRequest("Новое имя не может быть пустым.");
+        }
+
+        var cloudFile = await _context.Files.FindAsync(id);
+        if (cloudFile == null)
+        {
+            return NotFound("Файл не найден.");
         }
 
         cloudFile.Name = newName;
@@ -83,11 +108,19 @@ public class FilesController : ControllerBase
         var cloudFile = await _context.Files.FindAsync(id);
         if (cloudFile == null)
         {
-            return NotFound();
+            return NotFound("Файл не найден.");
         }
 
         _context.Files.Remove(cloudFile);
         await _context.SaveChangesAsync();
+
+        // Удаляем физический файл, если он существует
+        var filePath = Path.Combine("files", cloudFile.Name);
+        if (System.IO.File.Exists(filePath))
+        {
+            System.IO.File.Delete(filePath);
+        }
+
         return NoContent();
     }
 }
