@@ -3,11 +3,8 @@ using WebApplication1.Models;
 
 public class StemyCloudContext : DbContext
 {
+    public StemyCloudContext(DbContextOptions<StemyCloudContext> options) : base(options) { }
+
     public DbSet<CloudFile> Files { get; set; }
     public DbSet<User> Users { get; set; }
-
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-    {
-        optionsBuilder.UseNpgsql("Host=localhost;Database=StemyCloudDB;Username=postgre;Password=12345");
-    }
 }
