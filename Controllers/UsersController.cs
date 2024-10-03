@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging; // Добавлено для логгирования
 using WebApplication1.Models;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -9,86 +10,128 @@ using System.Threading.Tasks;
 public class UsersController : ControllerBase
 {
     private readonly StemyCloudContext _context;
+    private readonly ILogger<UsersController> _logger; // Добавлено
 
-    public UsersController(StemyCloudContext context)
+    public UsersController(StemyCloudContext context, ILogger<UsersController> logger) // Добавлено
     {
         _context = context;
+        _logger = logger; // Добавлено
     }
 
     [HttpPost]
     public async Task<ActionResult<User>> CreateUser([FromBody] User user)
     {
-        // Проверка на валидацию входных данных
-        if (string.IsNullOrWhiteSpace(user.FirstName) || string.IsNullOrWhiteSpace(user.LastName))
+        try
         {
-            return BadRequest("Имя и фамилия пользователя не могут быть пустыми.");
-        }
+            // Проверка на валидацию входных данных
+            if (string.IsNullOrWhiteSpace(user.FirstName) || string.IsNullOrWhiteSpace(user.LastName))
+            {
+                return BadRequest("Имя и фамилия пользователя не могут быть пустыми.");
+            }
 
-        // Проверка на существование пользователя с таким же именем
-        var existingUser = await _context.Users
-            .AnyAsync(u => u.FirstName == user.FirstName && u.LastName == user.LastName);
-        if (existingUser)
+            // Проверка на существование пользователя с таким же именем
+            var existingUser = await _context.Users
+                .AnyAsync(u => u.FirstName == user.FirstName && u.LastName == user.LastName);
+            if (existingUser)
+            {
+                return Conflict("Пользователь с таким именем уже существует.");
+            }
+
+            _context.Users.Add(user);
+            await _context.SaveChangesAsync();
+            return CreatedAtAction(nameof(GetUser), new { id = user.Id }, user);
+        }
+        catch (Exception ex)
         {
-            return Conflict("Пользователь с таким именем уже существует.");
+            _logger.LogError(ex, "Ошибка при создании пользователя"); // Логгирование ошибки
+            return StatusCode(500, "Произошла ошибка при создании пользователя.");
         }
-
-        _context.Users.Add(user);
-        await _context.SaveChangesAsync();
-        return CreatedAtAction(nameof(GetUser), new { id = user.Id }, user);
     }
 
     [HttpGet]
     public async Task<ActionResult<List<User>>> GetUsers()
     {
-        return await _context.Users.ToListAsync();
+        try
+        {
+            return await _context.Users.ToListAsync();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Ошибка при получении пользователей"); // Логгирование ошибки
+            return StatusCode(500, "Произошла ошибка при получении пользователей.");
+        }
     }
 
     [HttpGet("{id}")]
     public async Task<ActionResult<User>> GetUser(int id)
     {
-        var user = await _context.Users.FindAsync(id);
-        if (user == null)
+        try
         {
-            return NotFound();
-        }
+            var user = await _context.Users.FindAsync(id);
+            if (user == null)
+            {
+                return NotFound();
+            }
 
-        return user;
+            return user;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Ошибка при получении пользователя с ID {Id}", id); // Логгирование ошибки
+            return StatusCode(500, "Произошла ошибка при получении пользователя.");
+        }
     }
 
     [HttpPut("{id}")]
     public async Task<IActionResult> UpdateUser(int id, [FromBody] User updatedUser)
     {
-        // Проверка на валидацию входных данных
-        if (string.IsNullOrWhiteSpace(updatedUser.FirstName) || string.IsNullOrWhiteSpace(updatedUser.LastName))
+        try
         {
-            return BadRequest("Имя и фамилия пользователя не могут быть пустыми.");
-        }
+            // Проверка на валидацию входных данных
+            if (string.IsNullOrWhiteSpace(updatedUser.FirstName) || string.IsNullOrWhiteSpace(updatedUser.LastName))
+            {
+                return BadRequest("Имя и фамилия пользователя не могут быть пустыми.");
+            }
 
-        var user = await _context.Users.FindAsync(id);
-        if (user == null)
+            var user = await _context.Users.FindAsync(id);
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            user.FirstName = updatedUser.FirstName;
+            user.LastName = updatedUser.LastName;
+            user.Biography = updatedUser.Biography;
+
+            await _context.SaveChangesAsync();
+            return NoContent();
+        }
+        catch (Exception ex)
         {
-            return NotFound();
+            _logger.LogError(ex, "Ошибка при обновлении пользователя с ID {Id}", id); // Логгирование ошибки
+            return StatusCode(500, "Произошла ошибка при обновлении пользователя.");
         }
-
-        user.FirstName = updatedUser.FirstName;
-        user.LastName = updatedUser.LastName;
-        user.Biography = updatedUser.Biography;
-
-        await _context.SaveChangesAsync();
-        return NoContent();
     }
 
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteUser(int id)
     {
-        var user = await _context.Users.FindAsync(id);
-        if (user == null)
+        try
         {
-            return NotFound();
-        }
+            var user = await _context.Users.FindAsync(id);
+            if (user == null)
+            {
+                return NotFound();
+            }
 
-        _context.Users.Remove(user);
-        await _context.SaveChangesAsync();
-        return NoContent();
+            _context.Users.Remove(user);
+            await _context.SaveChangesAsync();
+            return NoContent();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Ошибка при удалении пользователя с ID {Id}", id); // Логгирование ошибки
+            return StatusCode(500, "Произошла ошибка при удалении пользователя.");
+        }
     }
 }
