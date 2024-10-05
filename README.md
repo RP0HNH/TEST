@@ -130,7 +130,7 @@ GET http://localhost:5184/api/users/{id}
 PUT http://localhost:5184/api/users/{id}
 ```
 
-Body (JSON)**
+Body (JSON):
 
 ```json
 {
