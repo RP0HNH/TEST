@@ -1,0 +1,177 @@
+{
+	"info": {
+		"_postman_id": "6f29aa6d-181b-4f99-916f-8bcb7a517ca9",
+		"name": "FilesController",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "38729443"
+	},
+	"item": [
+		{
+			"name": "POST: Загрузка файла (UploadFile)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"protocolVersion": "http1",
+				"strictSSL": false,
+				"followRedirects": true,
+				"followOriginalHttpMethod": false
+			},
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "file",
+							"type": "file",
+							"src": "/C:/Users/a/Pictures/1672008428_www-funnyart-club-p-raian-gosling-mem-kartinki-52.jpg"
+						},
+						{
+							"key": "author",
+							"value": "alexey",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "http://localhost:5184/api/files",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5184",
+					"path": [
+						"api",
+						"files"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET: Получение всех файлов (GetFiles)",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:5184/api/files",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5184",
+					"path": [
+						"api",
+						"files"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET: Получение файла по ID (GetFile)",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:5184/api/files/3",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5184",
+					"path": [
+						"api",
+						"files",
+						"3"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "PUT: Обновление имени файла (UpdateFile)",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "\"1672008428_www-funnyart-club-p-raian-gosling-mem-kartinki-52\"",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:5184/api/files/3",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5184",
+					"path": [
+						"api",
+						"files",
+						"3"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET: Загрузка файла по ID (DownloadFile)",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:5184/api/files/download/3",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5184",
+					"path": [
+						"api",
+						"files",
+						"download",
+						"3"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "DELETE: Удаление файла (DeleteFile)",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:5184/api/files/1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5184",
+					"path": [
+						"api",
+						"files",
+						"1"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

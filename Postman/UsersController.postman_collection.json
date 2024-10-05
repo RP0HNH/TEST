@@ -1,0 +1,131 @@
+{
+	"info": {
+		"_postman_id": "9399928e-fada-44b9-8765-ed1b871fafce",
+		"name": "UsersController",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "38729443"
+	},
+	"item": [
+		{
+			"name": "Создание пользователя (CreateUser)",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"firstName\": \"Ивана\",\r\n  \"lastName\": \"Иванов\",\r\n  \"biography\": \"Биография пользователя\"\r\n}\r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:5184/api/users",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5184",
+					"path": [
+						"api",
+						"users"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Получение списка пользователей (GetUsers)",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:5184/api/users",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5184",
+					"path": [
+						"api",
+						"users"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Получение пользователя по ID (GetUser)",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:5184/api/users/1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5184",
+					"path": [
+						"api",
+						"users",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Обновление пользователя (UpdateUser)",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"firstName\": \"Ивааны\",\r\n  \"lastName\": \"Петров\",\r\n  \"biography\": \"Обновлённая биография\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:5184/api/users/4",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5184",
+					"path": [
+						"api",
+						"users",
+						"4"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Удаление пользователя (DeleteUser)",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:5184/api/users/1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5184",
+					"path": [
+						"api",
+						"users",
+						"1"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

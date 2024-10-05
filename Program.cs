@@ -15,9 +15,9 @@ builder.Services.AddDbContext<StemyCloudContext>(options =>
            .LogTo(Console.WriteLine, LogLevel.Information); // Логирование запросов в консоль
 });
 
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+// Удаляем конфигурацию Swagger/OpenAPI
+// builder.Services.AddEndpointsApiExplorer();
+// builder.Services.AddSwaggerGen();
 
 // Configure logging
 builder.Logging.ClearProviders(); // Очищаем стандартные логгеры
@@ -35,9 +35,9 @@ var app = builder.Build();
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
-    // Включаем Swagger только в режиме разработки
-    app.UseSwagger();
-    app.UseSwaggerUI();
+    // Удаляем включение Swagger в режиме разработки
+    // app.UseSwagger();
+    // app.UseSwaggerUI();
 }
 
 // Включаем редирект на HTTPS
