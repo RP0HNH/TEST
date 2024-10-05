@@ -99,6 +99,15 @@ public class UsersController : ControllerBase
                 return NotFound();
             }
 
+            // Проверяем, существует ли пользователь с такими же именем и фамилией
+            var existingUser = await _context.Users
+                .AnyAsync(u => u.FirstName == updatedUser.FirstName && u.LastName == updatedUser.LastName && u.Id != id);
+
+            if (existingUser)
+            {
+                return Conflict("Пользователь с такими именем и фамилией уже существует.");
+            }
+
             user.FirstName = updatedUser.FirstName;
             user.LastName = updatedUser.LastName;
             user.Biography = updatedUser.Biography;
@@ -112,6 +121,7 @@ public class UsersController : ControllerBase
             return StatusCode(500, "Произошла ошибка при обновлении пользователя.");
         }
     }
+
 
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteUser(int id)

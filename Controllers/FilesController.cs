@@ -29,15 +29,23 @@ public class FilesController : ControllerBase
                 return BadRequest(validationMessage);
             }
 
-            // Шаг 2: Определение информации о файле
+            // Шаг 2: Проверка на уникальность имени файла
+            var existingFile = await _context.Files.FirstOrDefaultAsync(f => f.Name == file.FileName);
+            if (existingFile != null)
+            {
+                _logger.LogWarning("Файл с именем {FileName} уже существует", file.FileName);
+                return Conflict($"Файл с именем {file.FileName} уже существует.");
+            }
+
+            // Шаг 3: Определение информации о файле
             var cloudFile = GetFileInfo(file, author);
             _logger.LogInformation("Информация о файле определена: {FileName}, размер: {Size} байт", cloudFile.Name, cloudFile.Size);
 
-            // Шаг 3: Сохранение файла физически
+            // Шаг 4: Сохранение файла физически
             await SaveFileToDiskAsync(file);
             _logger.LogInformation("Файл {FileName} успешно сохранён на диск", cloudFile.Name);
 
-            // Шаг 4: Сохранение информации о файле в базе данных
+            // Шаг 5: Сохранение информации о файле в базе данных
             await SaveFileInfoToDatabaseAsync(cloudFile);
             _logger.LogInformation("Информация о файле {FileName} сохранена в базе данных", cloudFile.Name);
 
@@ -49,6 +57,7 @@ public class FilesController : ControllerBase
             return StatusCode(500, "Произошла ошибка при загрузке файла.");
         }
     }
+
 
     // Метод для проверки файла
     private bool IsValidFile(IFormFile file, out string validationMessage)
@@ -166,6 +175,13 @@ public class FilesController : ControllerBase
                 return BadRequest("Новое имя не может быть пустым.");
             }
 
+            // Проверяем, существует ли файл с таким же именем
+            var existingFile = await _context.Files.FirstOrDefaultAsync(f => f.Name == newName);
+            if (existingFile != null)
+            {
+                return Conflict($"Файл с именем {newName} уже существует.");
+            }
+
             var cloudFile = await _context.Files.FindAsync(id);
             if (cloudFile == null)
             {
@@ -182,6 +198,7 @@ public class FilesController : ControllerBase
             return StatusCode(500, "Произошла ошибка при обновлении файла.");
         }
     }
+
 
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteFile(int id)
