@@ -22,40 +22,78 @@ public class FilesController : ControllerBase
     {
         try
         {
-            // Проверяем, есть ли файл
-            if (file == null || file.Length == 0)
+            // Шаг 1: Проверка файла
+            if (!IsValidFile(file, out var validationMessage))
             {
-                return BadRequest("Файл не выбран.");
+                _logger.LogWarning("Ошибка валидации файла: {Message}", validationMessage);
+                return BadRequest(validationMessage);
             }
 
-            // Сохраняем файл физически
-            var filePath = Path.Combine("files", file.FileName);
-            using (var stream = new FileStream(filePath, FileMode.Create))
-            {
-                await file.CopyToAsync(stream);
-            }
+            // Шаг 2: Определение информации о файле
+            var cloudFile = GetFileInfo(file, author);
+            _logger.LogInformation("Информация о файле определена: {FileName}, размер: {Size} байт", cloudFile.Name, cloudFile.Size);
 
-            // Сохраняем информацию о файле в БД
-            var cloudFile = new CloudFile
-            {
-                Name = file.FileName,
-                Author = author,
-                UploadDate = DateTime.Now,
-                Size = file.Length,
-                Format = Path.GetExtension(file.FileName)
-            };
+            // Шаг 3: Сохранение файла физически
+            await SaveFileToDiskAsync(file);
+            _logger.LogInformation("Файл {FileName} успешно сохранён на диск", cloudFile.Name);
 
-            _context.Files.Add(cloudFile);
-            await _context.SaveChangesAsync();
+            // Шаг 4: Сохранение информации о файле в базе данных
+            await SaveFileInfoToDatabaseAsync(cloudFile);
+            _logger.LogInformation("Информация о файле {FileName} сохранена в базе данных", cloudFile.Name);
 
             return CreatedAtAction(nameof(GetFile), new { id = cloudFile.Id }, cloudFile);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Ошибка при загрузке файла"); // Логгирование ошибки
+            _logger.LogError(ex, "Ошибка при загрузке файла");
             return StatusCode(500, "Произошла ошибка при загрузке файла.");
         }
     }
+
+    // Метод для проверки файла
+    private bool IsValidFile(IFormFile file, out string validationMessage)
+    {
+        if (file == null || file.Length == 0)
+        {
+            validationMessage = "Файл не выбран или пуст.";
+            return false;
+        }
+
+        validationMessage = string.Empty;
+        return true;
+    }
+
+    // Метод для определения информации о файле
+    private CloudFile GetFileInfo(IFormFile file, string author)
+    {
+        return new CloudFile
+        {
+            Name = file.FileName,
+            Author = author,
+            UploadDate = DateTime.UtcNow, // Используем UTC вместо локального времени
+            Size = file.Length,
+            Format = Path.GetExtension(file.FileName)
+        };
+    }
+
+
+    // Метод для сохранения файла на диск
+    private async Task SaveFileToDiskAsync(IFormFile file)
+    {
+        var filePath = Path.Combine("files", file.FileName);
+        using (var stream = new FileStream(filePath, FileMode.Create))
+        {
+            await file.CopyToAsync(stream);
+        }
+    }
+
+    // Метод для сохранения информации о файле в базу данных
+    private async Task SaveFileInfoToDatabaseAsync(CloudFile cloudFile)
+    {
+        _context.Files.Add(cloudFile);
+        await _context.SaveChangesAsync();
+    }
+
 
     [HttpGet]
     public async Task<ActionResult<List<CloudFile>>> GetFiles()
