@@ -1,15 +1,18 @@
-# Инструкция по запуску проекта Stemy.Cloud
+Вот обновленная инструкция по запуску проекта для API системы управления облачным хранилищем Stemy.Cloud с учетом использования локального дампа базы данных и тестирования через Postman.
 
-## Предварительные требования
+### Инструкция по запуску проекта
+
+#### Предварительные требования
 
 Перед началом работы убедитесь, что на вашем компьютере установлены следующие инструменты:
 
-- [.NET SDK (версии 6.0 или выше)](https://dotnet.microsoft.com/download/dotnet)  
-- [PostgreSQL](https://www.postgresql.org/download/)  
-- [pgAdmin](https://www.pgadmin.org/download/)  
-- [Visual Studio](https://visualstudio.microsoft.com/vs/) или [Visual Studio Code](https://code.visualstudio.com/)  
+1. **.NET SDK** (версии 6.0 или выше) - [Скачать .NET SDK](https://dotnet.microsoft.com/download/dotnet).
+2. **PostgreSQL** - [Скачать PostgreSQL](https://www.postgresql.org/download/).
+3. **pgAdmin** - [Скачать pgAdmin](https://www.pgadmin.org/download/).
+4. **Visual Studio** или **Visual Studio Code** - [Скачать Visual Studio](https://visualstudio.microsoft.com/) или [Скачать Visual Studio Code](https://code.visualstudio.microsoft.com/).
+5. **Postman** - [Скачать Postman](https://www.postman.com/downloads/).
 
-## Шаг 1: Клонирование репозитория
+#### Шаг 1: Клонирование репозитория
 
 Сначала клонируйте репозиторий с исходным кодом проекта. В терминале или командной строке выполните команду:
 
@@ -19,17 +22,17 @@ git clone <URL_репозитория>
 
 Замените `<URL_репозитория>` на URL вашего репозитория на GitHub или альтернативной платформе.
 
-## Шаг 2: Восстановление базы данных из дампа
+#### Шаг 2: Восстановление базы данных из дампа
 
 1. Откройте pgAdmin и создайте новую базу данных (например, `StemyCloud`).
-2. Импортируйте дамп базы данных `BDStemy`, который находится в папке `DATA` вашего репозитория:
+2. Импортируйте дамп базы данных, который находится в папке `DATA` вашего репозитория:
    - Щелкните правой кнопкой мыши на созданной базе данных и выберите **Restore**.
    - Выберите файл дампа базы данных из папки `DATA`.
    - Нажмите **Restore** для восстановления данных.
 
-## Шаг 3: Настройка приложения
+#### Шаг 3: Настройка приложения
 
-Откройте файл `appsettings.json` вашего проекта и обновите строку подключения:
+1. Откройте файл `appsettings.json` вашего проекта и обновите строку подключения:
 
 ```json
 "ConnectionStrings": {
@@ -39,7 +42,7 @@ git clone <URL_репозитория>
 
 Замените `ваш_пароль` на фактический пароль пользователя `postgres`.
 
-## Шаг 4: Запуск приложения
+#### Шаг 4: Запуск приложения
 
 Для запуска API выполните следующую команду в терминале:
 
@@ -47,327 +50,63 @@ git clone <URL_репозитория>
 dotnet run
 ```
 
-После успешного запуска API вы должны увидеть сообщение о том, что приложение работает на указанном порту.
+После успешного запуска API вы должны увидеть сообщение о том, что приложение работает на указанном порту (обычно `http://localhost:5000` или `https://localhost:5001`).
 
-## Шаг 5: Тестирование API через Postman
+#### Шаг 5: Тестирование API через Postman
 
 1. Откройте Postman.
 2. Используйте следующие запросы для тестирования API:
 
-### Загрузка файла (POST)
+- **Загрузка файла** (POST):
+  ```
+  POST http://localhost:5000/api/files
+  ```
 
-```http
-{
-	"info": {
-		"_postman_id": "6f29aa6d-181b-4f99-916f-8bcb7a517ca9",
-		"name": "FilesController",
-		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-		"_exporter_id": "38729443"
-	},
-	"item": [
-		{
-			"name": "POST: Загрузка файла (UploadFile)",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							""
-						],
-						"type": "text/javascript",
-						"packages": {}
-					}
-				}
-			],
-			"protocolProfileBehavior": {
-				"protocolVersion": "http1",
-				"strictSSL": false,
-				"followRedirects": true,
-				"followOriginalHttpMethod": false
-			},
-			"request": {
-				"method": "POST",
-				"header": [],
-				"body": {
-					"mode": "formdata",
-					"formdata": [
-						{
-							"key": "file",
-							"type": "file",
-							"src": "/C:/Users/a/Pictures/1672008428_www-funnyart-club-p-raian-gosling-mem-kartinki-52.jpg"
-						},
-						{
-							"key": "author",
-							"value": "alexey",
-							"type": "text"
-						}
-					]
-				},
-				"url": {
-					"raw": "http://localhost:5184/api/files",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"port": "5184",
-					"path": [
-						"api",
-						"files"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "GET: Получение всех файлов (GetFiles)",
-			"request": {
-				"method": "GET",
-				"header": [],
-				"url": {
-					"raw": "http://localhost:5184/api/files",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"port": "5184",
-					"path": [
-						"api",
-						"files"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "GET: Получение файла по ID (GetFile)",
-			"request": {
-				"method": "GET",
-				"header": [],
-				"url": {
-					"raw": "http://localhost:5184/api/files/3",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"port": "5184",
-					"path": [
-						"api",
-						"files",
-						"3"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "PUT: Обновление имени файла (UpdateFile)",
-			"request": {
-				"method": "PUT",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "\"1672008428_www-funnyart-club-p-raian-gosling-mem-kartinki-52\"",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "http://localhost:5184/api/files/3",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"port": "5184",
-					"path": [
-						"api",
-						"files",
-						"3"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "GET: Загрузка файла по ID (DownloadFile)",
-			"request": {
-				"method": "GET",
-				"header": [],
-				"url": {
-					"raw": "http://localhost:5184/api/files/download/3",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"port": "5184",
-					"path": [
-						"api",
-						"files",
-						"download",
-						"3"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "DELETE: Удаление файла (DeleteFile)",
-			"request": {
-				"method": "DELETE",
-				"header": [],
-				"url": {
-					"raw": "http://localhost:5184/api/files/1",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"port": "5184",
-					"path": [
-						"api",
-						"files",
-						"1"
-					]
-				}
-			},
-			"response": []
-		}
-	]
-}
-```
+  Body (form-data):
+  - `file`: [выберите файл]
+  - `author`: "Имя автора"
 
-### Создание пользователя (POST)
+- **Получение списка файлов** (GET):
+  ```
+  GET http://localhost:5000/api/files
+  ```
 
-```http
-{
-	"info": {
-		"_postman_id": "9399928e-fada-44b9-8765-ed1b871fafce",
-		"name": "UsersController",
-		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-		"_exporter_id": "38729443"
-	},
-	"item": [
-		{
-			"name": "Создание пользователя (CreateUser)",
-			"request": {
-				"method": "POST",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\r\n  \"firstName\": \"Ивана\",\r\n  \"lastName\": \"Иванов\",\r\n  \"biography\": \"Биография пользователя\"\r\n}\r\n",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "http://localhost:5184/api/users",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"port": "5184",
-					"path": [
-						"api",
-						"users"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Получение списка пользователей (GetUsers)",
-			"request": {
-				"method": "GET",
-				"header": [],
-				"url": {
-					"raw": "http://localhost:5184/api/users",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"port": "5184",
-					"path": [
-						"api",
-						"users"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Получение пользователя по ID (GetUser)",
-			"request": {
-				"method": "GET",
-				"header": [],
-				"url": {
-					"raw": "http://localhost:5184/api/users/1",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"port": "5184",
-					"path": [
-						"api",
-						"users",
-						"1"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Обновление пользователя (UpdateUser)",
-			"request": {
-				"method": "PUT",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\r\n  \"firstName\": \"Ивааны\",\r\n  \"lastName\": \"Петров\",\r\n  \"biography\": \"Обновлённая биография\"\r\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "http://localhost:5184/api/users/4",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"port": "5184",
-					"path": [
-						"api",
-						"users",
-						"4"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Удаление пользователя (DeleteUser)",
-			"request": {
-				"method": "DELETE",
-				"header": [],
-				"url": {
-					"raw": "http://localhost:5184/api/users/1",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"port": "5184",
-					"path": [
-						"api",
-						"users",
-						"1"
-					]
-				}
-			},
-			"response": []
-		}
-	]
-}
-```
+- **Скачивание файла** (GET):
+  ```
+  GET http://localhost:5000/api/files/{id}/download
+  ```
+
+- **Обновление названия файла** (PUT):
+  ```
+  PUT http://localhost:5000/api/files/{id}
+  ```
+
+  Body (JSON):
+  ```json
+  {
+    "newName": "Новое название файла"
+  }
+  ```
+
+- **Удаление файла** (DELETE):
+  ```
+  DELETE http://localhost:5000/api/files/{id}
+  ```
+
+- **Создание пользователя** (POST):
+  ```
+  POST http://localhost:5000/api/users
+  ```
+
+  Body (JSON):
+  ```json
+  {
+    "firstName": "Имя",
+    "lastName": "Фамилия",
+    "biography": "Биография"
+  }
+  ```
+
+#### Заключение
+
+Теперь вы готовы использовать API для управления облачным хранилищем Stemy.Cloud. Убедитесь, что все зависимости установлены, и следуйте инструкциям по запуску, чтобы успешно запустить проект и протестировать его через Postman.
